@@ -1,11 +1,18 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException, Injectable } from '@nestjs/common';
+import { CryptService } from '../crypt/crypt.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { LoginUserDto } from './dto/login-user.dto';
+import { RegisterUserDto } from './dto/register-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { GetAllUserDto } from './dto/getall-user.dto';
-import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cryptService: CryptService,
+  ) {}
 
   async getAll({ offset, limit }: GetAllUserDto) {
     try {
@@ -17,6 +24,22 @@ export class UsersService {
       console.log('[USER.SERVICE GET ALL] error:', error);
       throw error;
     }
+  }
+
+  async register(dto: RegisterUserDto) {
+    const salt = await this.cryptService.generateSalt();
+    const hashedPassword = await this.cryptService.hash(dto.password, salt);
+
+    return this.prisma.user.create({
+      data: {
+        email: dto.email,
+        hashedPassword,
+      },
+      select: {
+        id: true,
+        email: true,
+      },
+    });
   }
 
   async getOne(id: number) {
@@ -60,5 +83,25 @@ export class UsersService {
     return this.prisma.user.delete({
       where: { id },
     });
+  }
+
+  async login(dto: LoginUserDto) {
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Email or password is incorrect');
+    }
+    const isSamePassword = await this.cryptService.compare(
+      dto.password,
+      user.hashedPassword,
+    );
+
+    if (!isSamePassword) {
+      throw new BadRequestException('Email or password is incorrect');
+    }
+
+    return 'You are logged in!';
   }
 }
