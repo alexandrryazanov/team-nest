@@ -1,5 +1,5 @@
-import { PrismaClient } from '../generated/prisma';
-import { CryptService } from '../src/modules/crypt/crypt.service';
+import { PrismaClient } from '../../generated/prisma';
+import { CryptService } from '../modules/crypt/crypt.service';
 
 const prisma = new PrismaClient();
 const cryptService = new CryptService();
