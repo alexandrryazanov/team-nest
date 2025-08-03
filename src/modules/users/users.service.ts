@@ -1,14 +1,16 @@
-import { BadRequestException, NotFoundException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  NotFoundException,
+  Injectable,
+} from '@nestjs/common';
 import { CryptService } from '../crypt/crypt.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { CreateUserDto } from './dto/create-user.dto';
 import { GetAllUserDto } from './dto/getall-user.dto';
 
 @Injectable()
 export class UsersService {
-
   constructor(
     private readonly prisma: PrismaService,
     private readonly cryptService: CryptService,
@@ -55,17 +57,6 @@ export class UsersService {
     }
 
     return user;
-  }
-
-  async create({ email, password }: CreateUserDto) {
-    try {
-      return await this.prisma.user.create({
-        data: { email, password },
-      });
-    } catch (error) {
-      console.log('[USER.SERVICE CREATE] error:', error);
-      throw error;
-    }
   }
 
   async delete(id: number) {

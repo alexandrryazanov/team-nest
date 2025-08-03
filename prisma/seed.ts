@@ -1,6 +1,8 @@
 import { PrismaClient } from '../generated/prisma';
+import { CryptService } from '../src/modules/crypt/crypt.service';
 
 const prisma = new PrismaClient();
+const cryptService = new CryptService();
 
 async function main() {
   await seedUser();
@@ -9,14 +11,18 @@ async function main() {
 async function seedUser() {
   await prisma.user.deleteMany();
 
+  const password = '1234';
+  const salt = await cryptService.generateSalt();
+  const hashedPassword = await cryptService.hash(password, salt);
+
   await prisma.user.createMany({
     data: [
-      { email: 'sanek@example.com', password: '3333' },
-      { email: 'oleg@example.com', password: '4444' },
-      { email: 'serega@example.com', password: '55555' },
-      { email: 'mihan@example.com', password: '666666' },
-      { email: 'vovan@example.com', password: '777777' },
-      { email: 'yana@example.com', password: '8888888' },
+      { email: 'sanek@example.com', hashedPassword },
+      { email: 'oleg@example.com', hashedPassword },
+      { email: 'serega@example.com', hashedPassword },
+      { email: 'mihan@example.com', hashedPassword },
+      { email: 'vovan@example.com', hashedPassword },
+      { email: 'yana@example.com', hashedPassword },
     ],
   });
 
