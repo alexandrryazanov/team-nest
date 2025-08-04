@@ -52,4 +52,10 @@ export class UsersController {
     response.cookie('refreshToken', refreshToken, { httpOnly: true });
     return { accessToken };
   }
+
+  @Post('/logout')
+  logout(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie('refreshToken', { httpOnly: true });
+    return 'OK';
+  }
 }
