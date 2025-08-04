@@ -10,12 +10,13 @@ import {
   Param,
   Post,
   Query,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { GetAllUserDto } from './dto/getall-user.dto';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -49,6 +50,18 @@ export class UsersController {
     @Res({ passthrough: true }) response: Response,
   ) {
     const { accessToken, refreshToken } = await this.usersService.login(dto);
+    response.cookie('refreshToken', refreshToken, { httpOnly: true });
+    return { accessToken };
+  }
+
+  @Post('/refresh')
+  async refresh(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const token: string = request.cookies['refreshToken'];
+    const { accessToken, refreshToken } =
+      await this.usersService.refresh(token);
     response.cookie('refreshToken', refreshToken, { httpOnly: true });
     return { accessToken };
   }

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from '../../types/jwt';
 import { CryptService } from '../crypt/crypt.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -99,11 +100,22 @@ export class UsersService {
       throw new BadRequestException('Email or password is incorrect');
     }
 
-    const { accessToken, refreshToken } = await this.generateTokensPair({
-      sub: user.id,
-    });
+    return this.generateTokensPair({ sub: user.id });
+  }
 
-    return { accessToken, refreshToken };
+  async refresh(refreshToken: string) {
+    try {
+      const payload: JwtPayload = await this.jwtService.verifyAsync(
+        refreshToken,
+        {
+          secret: this.configService.get<string>('JWT_KEY'),
+        },
+      );
+
+      return this.generateTokensPair(payload);
+    } catch {
+      throw new ForbiddenException('Invalid refresh token');
+    }
   }
 
   private async generateTokensPair(payload: object) {
