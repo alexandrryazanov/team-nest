@@ -17,15 +17,10 @@ export class UsersService {
   ) {}
 
   async getAll({ offset, limit }: GetAllUserDto) {
-    try {
-      return await this.prisma.user.findMany({
-        skip: offset,
-        take: limit,
-      });
-    } catch (error) {
-      console.log('[USER.SERVICE GET ALL] error:', error);
-      throw error;
-    }
+    return this.prisma.user.findMany({
+      skip: offset,
+      take: limit,
+    });
   }
 
   async register(dto: RegisterUserDto) {
@@ -50,9 +45,6 @@ export class UsersService {
     });
 
     if (!user) {
-      console.log(
-        `[USER.SERVICE GET ONE] error: Can not find user with ID ${id}`,
-      );
       throw new NotFoundException(`Can not find user with ID ${id}`);
     }
 
@@ -65,9 +57,6 @@ export class UsersService {
     });
 
     if (!user) {
-      console.log(
-        `[USER.SERVICE DELETE] error: Can not find user with ID ${id}`,
-      );
       throw new NotFoundException(`Can not find user with ID ${id}`);
     }
 
