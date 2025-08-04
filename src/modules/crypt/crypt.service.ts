@@ -7,7 +7,8 @@ export class CryptService {
     return await bcrypt.genSalt(10);
   }
 
-  async hash(password: string, salt: string) {
+  async hash(password: string) {
+    const salt = await this.generateSalt();
     return await bcrypt.hash(password, salt);
   }
 

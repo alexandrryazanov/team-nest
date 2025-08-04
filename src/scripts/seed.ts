@@ -12,8 +12,7 @@ async function seedUser() {
   await prisma.user.deleteMany();
 
   const password = '1234';
-  const salt = await cryptService.generateSalt();
-  const hashedPassword = await cryptService.hash(password, salt);
+  const hashedPassword = await cryptService.hash(password);
 
   await prisma.user.createMany({
     data: [
