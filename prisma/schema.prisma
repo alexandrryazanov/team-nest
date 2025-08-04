@@ -21,3 +21,12 @@ model User {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
+
+model Feature {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  value     Boolean
+  payload   Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

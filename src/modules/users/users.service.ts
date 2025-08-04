@@ -22,6 +22,14 @@ export class UsersService {
   ) {}
 
   async getAll({ offset, limit }: GetAllUserDto) {
+    const getAllUsersFeatureFlag = await this.prisma.feature.findUnique({
+      where: { name: 'getAllUsers' },
+    });
+
+    if (!getAllUsersFeatureFlag?.value) {
+      throw new ForbiddenException('Feature flag is disabled');
+    }
+
     return this.prisma.user.findMany({
       skip: offset,
       take: limit,
