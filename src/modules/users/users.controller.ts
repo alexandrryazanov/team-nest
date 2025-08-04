@@ -1,15 +1,34 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
 import { LoginUserDto } from './dto/login-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
+import { GetAllUserDto } from './dto/getall-user.dto';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('/')
-  getAll() {
-    return this.usersService.getAll();
+  async getAll(@Query() dto: GetAllUserDto) {
+    return await this.usersService.getAll(dto);
+  }
+
+  @Get('/:id')
+  async getOne(@Param('id') id: number) {
+    return await this.usersService.getOne(id);
+  }
+
+  @Delete('/:id')
+  async delete(@Param('id') id: number) {
+    return await this.usersService.delete(id);
   }
 
   @Post('/register')
