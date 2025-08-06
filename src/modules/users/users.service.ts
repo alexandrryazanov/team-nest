@@ -120,15 +120,21 @@ export class UsersService {
 
   private async generateTokensPair(payload: object) {
     const secret = this.configService.get<string>('JWT_KEY');
+    const accessExpiresIn = this.configService.get<string>(
+      'JWT_ACCESS_EXPIRES_IN',
+    );
+    const refreshExpiresIn = this.configService.get<string>(
+      'JWT_REFRESH_EXPIRES_IN',
+    );
 
     const accessToken = await this.jwtService.signAsync(
       { ...payload, type: 'access' },
-      { secret, expiresIn: '1m' },
+      { secret, expiresIn: accessExpiresIn },
     );
 
     const refreshToken = await this.jwtService.signAsync(
       { ...payload, type: 'refresh' },
-      { secret, expiresIn: '1d' },
+      { secret, expiresIn: refreshExpiresIn },
     );
 
     return { accessToken, refreshToken };

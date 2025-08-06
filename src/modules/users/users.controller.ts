@@ -23,7 +23,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('/')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard({ adminOnly: true }))
   async getAll(@Query() dto: GetAllUserDto) {
     return await this.usersService.getAll(dto);
   }
@@ -34,7 +34,7 @@ export class UsersController {
   }
 
   @Delete('/:id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard())
   async delete(@Param('id') id: number, @UserId() initiatorId: number) {
     return await this.usersService.delete(id, initiatorId);
   }
