@@ -1,4 +1,3 @@
-// auth.guard.ts
 import {
   CanActivate,
   ExecutionContext,
@@ -55,7 +54,7 @@ export function AuthGuard(
 
       if (options.adminOnly) {
         const user = await this.prismaService.user.findUnique({
-          where: { id: Number(payload.sub) },
+          where: { id: payload.sub },
           select: { isAdmin: true },
         });
         if (!user) {
