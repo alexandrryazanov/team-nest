@@ -11,11 +11,18 @@ async function main() {
 async function seedUser() {
   await prisma.user.deleteMany();
 
+  const adminPassword = '1111';
+  const adminHashedPassword = await cryptService.hash(adminPassword);
   const password = '1234';
   const hashedPassword = await cryptService.hash(password);
 
   await prisma.user.createMany({
     data: [
+      {
+        email: 'admin@admin.com',
+        hashedPassword: adminHashedPassword,
+        isAdmin: true,
+      },
       { email: 'sanek@example.com', hashedPassword },
       { email: 'oleg@example.com', hashedPassword },
       { email: 'serega@example.com', hashedPassword },
