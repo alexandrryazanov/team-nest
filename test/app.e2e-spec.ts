@@ -69,6 +69,16 @@ describe('UsersController (e2e)', () => {
     expect(cookies).toBeDefined();
   });
 
+  it('/users/:id (GET) should get user', async () => {
+    const userId = jwtService.decode(accessToken).sub;
+
+    const response = await request(httpServer)
+      .get(`/users/${userId}`)
+      .expect(200);
+
+    expect(response.body).toBeDefined();
+  });
+
   it('/users/:id (DELETE) should delete a user (authorized)', async () => {
     const userId = jwtService.decode(accessToken).sub;
 
