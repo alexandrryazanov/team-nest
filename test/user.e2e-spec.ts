@@ -79,6 +79,16 @@ describe('UsersController (e2e)', () => {
     expect(response.body).toBeDefined();
   });
 
+  it('/users/logout (POST) should logout user', async () => {
+    const response = await request(httpServer)
+      .post(`/users/logout`)
+      .expect(201);
+
+    expect(response.body).toBeDefined();
+  });
+
+
+
   it('/users/:id (DELETE) should delete a user (authorized)', async () => {
     const userId = jwtService.decode(accessToken).sub;
 
