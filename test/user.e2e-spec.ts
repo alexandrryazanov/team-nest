@@ -34,7 +34,6 @@ describe('UsersController (e2e)', () => {
 
   let accessToken: string;
   let cookies: string;
-  let userId: number;
 
   const email = 'test_2@email.com';
   const password = 'password';
@@ -49,7 +48,6 @@ describe('UsersController (e2e)', () => {
       .expect(201);
 
     expect(response.body).toHaveProperty('id');
-    userId = Number(response.body.id);
   });
 
   it('/users/login (POST) should log in a user', async () => {
