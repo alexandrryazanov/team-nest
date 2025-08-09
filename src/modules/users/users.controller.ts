@@ -8,6 +8,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Query,
   Req,
@@ -29,13 +30,16 @@ export class UsersController {
   }
 
   @Get('/:id')
-  async getOne(@Param('id') id: number) {
+  async getOne(@Param('id', ParseIntPipe) id: number) {
     return await this.usersService.getOne(id);
   }
 
   @Delete('/:id')
   @UseGuards(AuthGuard())
-  async delete(@Param('id') id: number, @UserId() initiatorId: number) {
+  async delete(
+    @Param('id', ParseIntPipe) id: number,
+    @UserId() initiatorId: number,
+  ) {
     return await this.usersService.delete(id, initiatorId);
   }
 
