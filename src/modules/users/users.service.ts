@@ -44,6 +44,7 @@ export class UsersService {
       data: {
         email: dto.email,
         hashedPassword,
+        isAdmin: dto.isAdmin,
       },
       select: {
         id: true,

@@ -33,9 +33,11 @@ describe('UsersController (e2e)', () => {
   });
 
   let accessToken: string;
+  let adminAccessToken: string;
   let cookies: string;
 
   const email = 'test_2@email.com';
+  const adminEmail = 'teat_admin@email.com';
   const password = 'password';
 
   it('/users/register (POST) should register a user', async () => {
@@ -90,10 +92,18 @@ describe('UsersController (e2e)', () => {
     expect(response.body).toBeDefined();
   });
 
+  it('/users/ (GET) non-admin user should have 403 on get all users', async () => {
+    const response = await request(httpServer)
+      .get(`/users/`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(403);
+
+    expect(response.body).toBeDefined();
+  });
+
   it('/users/logout (POST) should logout user', async () => {
     const response = await request(httpServer)
       .post(`/users/logout`)
-      // TODO: what status should be here?
       .expect(201);
 
     expect(response.body).toBeDefined();
@@ -105,6 +115,52 @@ describe('UsersController (e2e)', () => {
     const response = await request(httpServer)
       .delete(`/users/${userId}`)
       .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
+
+    expect(response.body).toBeDefined();
+  });
+
+  it('/users/register (POST) should register a user as admin', async () => {
+    const response = await request(httpServer)
+      .post('/users/register')
+      .send({
+        email: adminEmail,
+        password: password,
+        isAdmin: true,
+      })
+      .expect(201);
+
+    expect(response.body).toHaveProperty('id');
+  });
+
+  it('/users/login (POST) should log in a user as admin', async () => {
+    const response = await request(httpServer)
+      .post('/users/login')
+      .send({
+        email: adminEmail,
+        password: password,
+      })
+      .expect(201);
+
+    expect(response.body).toHaveProperty('accessToken');
+    adminAccessToken = response.body.accessToken;
+  });
+
+  it('/users/ (GET) admin user should have all users', async () => {
+    const response = await request(httpServer)
+      .get(`/users/`)
+      .set('Authorization', `Bearer ${adminAccessToken}`)
+      .expect(200);
+
+    expect(response.body).toBeDefined();
+  });
+
+  it('/users/:id (DELETE) should delete an admin user (authorized)', async () => {
+    const userId = jwtService.decode(adminAccessToken).sub;
+
+    const response = await request(httpServer)
+      .delete(`/users/${userId}`)
+      .set('Authorization', `Bearer ${adminAccessToken}`)
       .expect(200);
 
     expect(response.body).toBeDefined();
