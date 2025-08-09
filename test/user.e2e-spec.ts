@@ -50,7 +50,6 @@ describe('UsersController (e2e)', () => {
 
     expect(response.body).toHaveProperty('id');
     userId = Number(response.body.id);
-    console.log('userId = ', userId);
   });
 
   it('/users/login (POST) should log in a user', async () => {
@@ -73,6 +72,7 @@ describe('UsersController (e2e)', () => {
     const response = await request(httpServer)
       .post('/users/refresh')
       .set('Cookie', `${cookies}`)
+      // TODO: waht status should be here?
       .expect(201);
 
     expect(response.body).toHaveProperty('accessToken');
@@ -95,7 +95,7 @@ describe('UsersController (e2e)', () => {
   it('/users/logout (POST) should logout user', async () => {
     const response = await request(httpServer)
       .post(`/users/logout`)
-      // TODO: instead of 201 status here should be 200
+      // TODO: waht status should be here?
       .expect(201);
 
     expect(response.body).toBeDefined();
