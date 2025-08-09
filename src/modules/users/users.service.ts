@@ -112,7 +112,7 @@ export class UsersService {
         },
       );
 
-      return this.generateTokensPair(payload);
+      return this.generateTokensPair({ sub: payload.sub });
     } catch {
       throw new ForbiddenException('Invalid refresh token');
     }

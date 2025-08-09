@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
-// import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
 import { JwtService } from '@nestjs/jwt';
 
-// import * as cookieParser from 'cookie-parser';
+import * as cookieParser from 'cookie-parser';
+import { timeout } from 'rxjs';
 
 const jwtService = new JwtService();
 
@@ -19,11 +19,13 @@ describe('UsersController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    // app.use(cookieParser());
+    app.use(cookieParser());
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     await app.init();
 
     httpServer = app.getHttpServer();
+
+    timeout(100000);
   });
 
   afterAll(async () => {
@@ -31,10 +33,10 @@ describe('UsersController (e2e)', () => {
   });
 
   let accessToken: string;
-  // let refreshToken: string;
+  let cookies: string;
   let userId: number;
 
-  const email = 'test_1@email.com';
+  const email = 'test_2@email.com';
   const password = 'password';
 
   it('/users/register (POST) should register a user', async () => {
@@ -63,9 +65,20 @@ describe('UsersController (e2e)', () => {
     expect(response.body).toHaveProperty('accessToken');
     accessToken = response.body.accessToken;
 
-    console.log('accessToken = ', accessToken);
+    cookies = response.headers['set-cookie'][0];
+    expect(cookies).toBeDefined();
+  });
 
-    const cookies = response.headers['set-cookie'];
+  it('/users/refresh (POST) should refresh access token for a user', async () => {
+    const response = await request(httpServer)
+      .post('/users/refresh')
+      .set('Cookie', `${cookies}`)
+      .expect(201);
+
+    expect(response.body).toHaveProperty('accessToken');
+    accessToken = response.body.accessToken;
+
+    cookies = response.headers['set-cookie'][0];
     expect(cookies).toBeDefined();
   });
 
@@ -82,12 +95,11 @@ describe('UsersController (e2e)', () => {
   it('/users/logout (POST) should logout user', async () => {
     const response = await request(httpServer)
       .post(`/users/logout`)
+      // TODO: instead of 201 status here should be 200
       .expect(201);
 
     expect(response.body).toBeDefined();
   });
-
-
 
   it('/users/:id (DELETE) should delete a user (authorized)', async () => {
     const userId = jwtService.decode(accessToken).sub;
