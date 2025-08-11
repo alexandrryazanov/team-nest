@@ -44,6 +44,7 @@ export class UsersService {
       data: {
         email: dto.email,
         hashedPassword,
+        isAdmin: dto.isAdmin,
       },
       select: {
         id: true,
@@ -112,7 +113,7 @@ export class UsersService {
         },
       );
 
-      return this.generateTokensPair(payload);
+      return this.generateTokensPair({ sub: payload.sub });
     } catch {
       throw new ForbiddenException('Invalid refresh token');
     }
