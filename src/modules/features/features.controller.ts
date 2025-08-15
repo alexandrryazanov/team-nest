@@ -10,12 +10,7 @@ import {
 import { FeaturesService } from './features.service';
 import { CreateFeatureDto } from './dto/create-feature.dto';
 import { UpdateFeatureDto } from './dto/update-feature.dto';
-import {
-  ApiBody,
-  ApiResponse,
-  ApiTags,
-  ApiOperation,
-} from '@nestjs/swagger';
+import { ApiBody, ApiResponse, ApiTags, ApiOperation } from '@nestjs/swagger';
 
 @ApiTags('Features')
 @Controller('features')
@@ -43,7 +38,10 @@ export class FeaturesController {
   // @ApiBody({ type: RegisterUserDto, description: 'User registration data' })
   @ApiResponse({ status: 201, description: 'New feature created' })
   @ApiResponse({ status: 400, description: 'Invalid feature' })
-  @ApiResponse({ status: 409, description: 'Provided feature name is already exist' })
+  @ApiResponse({
+    status: 409,
+    description: 'Provided feature name is already exist',
+  })
   create(@Body() createFeatureDto: CreateFeatureDto) {
     return this.featuresService.create(createFeatureDto);
   }
@@ -82,6 +80,8 @@ export class FeaturesController {
     summary: 'Delete feature by id',
     description: 'Delete feature by id',
   })
+  @ApiResponse({ status: 200, description: 'Feature is deleted' })
+  @ApiResponse({ status: 400, description: 'Feature is not found' })
   remove(@Param('id') id: string) {
     return this.featuresService.remove(+id);
   }

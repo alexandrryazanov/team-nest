@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { UserId } from '../../decorators/user-id.decorator';
 import { AuthGuard } from '../../guards/auth.guard';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -26,7 +25,6 @@ import {
   ApiOperation,
   ApiParam,
   ApiBearerAuth,
-  ApiQuery,
   ApiExtraModels,
 } from '@nestjs/swagger';
 
@@ -39,10 +37,17 @@ export class UsersController {
   @Get('/')
   @ApiOperation({
     summary: 'Get all registered users',
-    description: 'Retrieves a list of all registered users. Restricted to admin users only.',
+    description:
+      'Retrieves a list of all registered users. Restricted to admin users only.',
   })
-  @ApiResponse({ status: 200, description: 'Successfully retrieved list of users.'})
-  @ApiResponse({ status: 401, description: 'Unauthorized if no valid token is provided.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully retrieved list of users.',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized if no valid token is provided.',
+  })
   @ApiResponse({ status: 403, description: 'Forbidden for non-admin users.' })
   @ApiBearerAuth('JWT')
   @UseGuards(AuthGuard({ adminOnly: true }))
@@ -52,10 +57,10 @@ export class UsersController {
 
   @Get('/:id')
   @ApiOperation({
-    summary: 'Get a user by ID', 
+    summary: 'Get a user by ID',
     description: 'Retrieves a single user by their ID.',
   })
-  @ApiParam({ 
+  @ApiParam({
     name: 'id',
     type: Number,
     description: 'The ID of the user to retrieve',
@@ -69,11 +74,11 @@ export class UsersController {
   }
 
   @Delete('/:id')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Delete a user by ID',
     description: 'Deletes a user by their ID. Requires authentication.',
   })
-  @ApiParam({ 
+  @ApiParam({
     name: 'id',
     type: Number,
     description: 'The ID of the user to delete',
@@ -81,8 +86,14 @@ export class UsersController {
     required: true,
   })
   @ApiResponse({ status: 200, description: 'Successfully deleted the user.' })
-  @ApiResponse({ status: 401, description: 'Unauthorized if no valid token is provided.' })
-  @ApiResponse({ status: 403, description: 'Forbidden if the user does not have permission.' })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized if no valid token is provided.',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden if the user does not have permission.',
+  })
   @ApiResponse({ status: 404, description: 'User not found.' })
   @ApiBearerAuth('JWT')
   @UseGuards(AuthGuard())
@@ -91,7 +102,7 @@ export class UsersController {
   }
 
   @Post('/register')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Register a new user',
     description: 'Creates a new user account.',
   })
@@ -116,7 +127,7 @@ export class UsersController {
   }
 
   @Post('/login')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Login already registered user',
     description: 'User login by sending user email and password',
   })
@@ -131,7 +142,7 @@ export class UsersController {
           password: 'Password123!',
         },
       },
-    }
+    },
   })
   async login(
     @Body() dto: LoginUserDto,
@@ -143,7 +154,7 @@ export class UsersController {
   }
 
   @Post('/refresh')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Refresh access token',
     description: 'Refresh access token by sending refresh token to the server',
   })
@@ -168,7 +179,7 @@ export class UsersController {
   }
 
   @Post('/logout')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'User logout',
     description: 'Make user logout',
   })
