@@ -4,7 +4,7 @@ import { IsInt, IsOptional, Min, Max } from 'class-validator';
 
 export class GetAllUserDto {
   @ApiPropertyOptional({
-    description: 'limit',
+    description: 'output user limit',
     maximum: 100,
     minimum: 1,
     type: Number,
@@ -18,7 +18,7 @@ export class GetAllUserDto {
   limit: number = 10;
 
   @ApiPropertyOptional({
-    description: 'offset',
+    description: 'output user offset',
     minimum: 0,
     type: Number,
     default: 0,
