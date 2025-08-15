@@ -44,12 +44,6 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Successfully retrieved list of users.'})
   @ApiResponse({ status: 401, description: 'Unauthorized if no valid token is provided.' })
   @ApiResponse({ status: 403, description: 'Forbidden for non-admin users.' })
-  @ApiQuery({
-    name: 'dto',
-    type: GetAllUserDto,
-    description: 'Query parameters for filtering and paginating users',
-    required: false,
-  })
   @ApiBearerAuth('JWT')
   @UseGuards(AuthGuard({ adminOnly: true }))
   async getAll(@Query() dto: GetAllUserDto) {
@@ -166,7 +160,6 @@ export class UsersController {
     if (!request.cookies.refreshToken) {
       throw new BadRequestException('Refresh token is not provided in cookies');
     }
-
     const token: string = request.cookies['refreshToken'];
     const { accessToken, refreshToken } =
       await this.usersService.refresh(token);
