@@ -1,3 +1,4 @@
+import { InjectQueue } from '@nestjs/bullmq';
 import {
   BadRequestException,
   NotFoundException,
@@ -6,8 +7,10 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { Queue } from 'bullmq';
 import { JwtPayload } from '../../types/jwt';
 import { CryptService } from '../crypt/crypt.service';
+import { EmailsType } from '../emails/emails.constants';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -20,6 +23,7 @@ export class UsersService {
     private readonly cryptService: CryptService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    @InjectQueue('emails') private emailsQueue: Queue,
   ) {}
 
   async getAll({ offset, limit }: GetAllUserDto) {
@@ -40,7 +44,7 @@ export class UsersService {
   async register(dto: RegisterUserDto) {
     const hashedPassword = await this.cryptService.hash(dto.password);
 
-    return this.prisma.user.create({
+    const user = await this.prisma.user.create({
       data: {
         email: dto.email,
         hashedPassword,
@@ -50,6 +54,16 @@ export class UsersService {
         email: true,
       },
     });
+
+    await this.emailsQueue.add(
+      EmailsType.SEND_WELCOME_EMAIL,
+      {
+        email: user.email,
+      },
+      { delay: 3000 },
+    );
+
+    return user;
   }
 
   async getOne(id: number) {
@@ -99,6 +113,10 @@ export class UsersService {
     if (!isSamePassword) {
       throw new BadRequestException('Email or password is incorrect');
     }
+
+    await this.emailsQueue.add(EmailsType.SEND_LOGIN_EMAIL, {
+      email: user.email,
+    });
 
     return this.generateTokensPair({ sub: user.id });
   }
