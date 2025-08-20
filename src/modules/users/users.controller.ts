@@ -71,4 +71,15 @@ export class UsersController {
     response.clearCookie('refreshToken', { httpOnly: true });
     return 'OK';
   }
+
+  @Get('/image/:id')
+  async getImage(@Res() res: Response, @Param('id') id: number)
+  {
+    const image = await this.usersService.getImage(id);
+
+    res.setHeader('Content-Type', 'image/png');
+    res.send(image);
+
+    return res;
+  }
 }

@@ -15,6 +15,9 @@ import { PrismaService } from '../prisma/prisma.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { GetAllUserDto } from './dto/getall-user.dto';
+import { HttpService } from '@nestjs/axios';
+import { AxiosResponse } from 'axios';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class UsersService {
@@ -24,6 +27,7 @@ export class UsersService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     @InjectQueue('emails') private emailsQueue: Queue,
+    private readonly httpService: HttpService,
   ) {}
 
   async getAll({ offset, limit }: GetAllUserDto) {
@@ -156,5 +160,18 @@ export class UsersService {
     );
 
     return { accessToken, refreshToken };
+  }
+
+  async getImage(id: number): Promise<Uint8Array> {
+    const response: AxiosResponse = await lastValueFrom(
+      this.httpService.get(`http://localhost:5555/hello/${id}`, {
+        responseType: 'arraybuffer',
+      }),
+    );
+    if (!response) {
+      throw new BadRequestException('can not get image');
+    }
+    const image: Uint8Array = response.data;
+    return image;
   }
 }

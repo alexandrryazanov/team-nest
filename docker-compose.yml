@@ -12,6 +12,21 @@ services:
     ports:
       - "5432:5432"
 
+  flask-app:
+    build:
+      context: .
+      dockerfile: python/Dockerfile
+    ports:
+      - "5555:5555"
+    volumes:
+      - ./python/src:/app
+      - ./python/data:/app/data
+    environment:
+      - FLASK_ENV=development
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    container_name: flask_app
+
   redis:
     image: redis:6.2-alpine
     restart: always
