@@ -13,17 +13,15 @@ function encryptFile(inputFile, outputFile) {
   const input = fs.createReadStream(inputFile);
   const output = fs.createWriteStream(outputFile);
 
-  // Запишем IV в начало файла, чтобы потом использовать при расшифровке
   output.write(iv);
 
   input.pipe(cipher).pipe(output);
-  output.on('finish', () => console.log(`✅ Файл зашифрован: ${outputFile}`));
+  output.on('finish', () => console.log(`File encrypted to: ${outputFile}`));
 }
 
-// usage: node encrypt.js input.txt output.enc
 const [, , inputFile, outputFile] = process.argv;
 if (!inputFile || !outputFile) {
-  console.error('❌ Использование: node encrypt.js input.txt output.enc');
+  console.error('❌ usage: node encrypt.js input.txt output.enc');
   process.exit(1);
 }
 

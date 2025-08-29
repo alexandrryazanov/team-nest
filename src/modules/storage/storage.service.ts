@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Storage } from '@google-cloud/storage';
 import { ConfigService } from '@nestjs/config';
+import * as fs from 'fs';
 
 @Injectable()
 export class StorageService {
@@ -10,18 +11,24 @@ export class StorageService {
   constructor(private readonly configService: ConfigService) {
     const projectId = this.configService.get<string>('GOOGLE_PROJECT_ID');
     const bucketName = this.configService.get<string>('GOOGLE_BUCKET_NAME');
+    const keyFilename = './google-account-key.json';
+
+    try {
+      fs.readFileSync(keyFilename);
+    } catch {
+      throw new Error(
+        `${keyFilename} file is not provided. Run decrypt-google-key script.`,
+      );
+    }
 
     if (!bucketName || !projectId) {
       throw new Error(
-        'Google bucket name or project id is not provided in .env file. Check the .env.example file.',
+        'GOOGLE_PROJECT_ID or GOOGLE_BUCKET_NAME is not provided in .env file. Check the .env.example file.',
       );
     }
 
     this.bucketName = bucketName;
-    this.storage = new Storage({
-      projectId: projectId,
-      keyFilename: './google-account-key.json',
-    });
+    this.storage = new Storage({ projectId: projectId, keyFilename });
   }
 
   async listFiles(): Promise<string[]> {

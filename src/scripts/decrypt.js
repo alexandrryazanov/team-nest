@@ -10,7 +10,6 @@ const key = Buffer.from(process.env.ENCRYPT_SECRET_KEY);
 function decryptFile(inputFile, outputFile) {
   const input = fs.readFileSync(inputFile);
 
-  // Первые 16 байт — это IV
   const iv = input.slice(0, 16);
   const encryptedData = input.slice(16);
 
@@ -21,13 +20,13 @@ function decryptFile(inputFile, outputFile) {
   ]);
 
   fs.writeFileSync(outputFile, decrypted);
-  console.log(`✅ Файл расшифрован: ${outputFile}`);
+  console.log(`File ${inputFile} decrypted.`);
 }
 
 // usage: node decrypt.js input.enc output.txt
 const [, , inputFile, outputFile] = process.argv;
 if (!inputFile || !outputFile) {
-  console.error('❌ Использование: node decrypt.js input.enc output.txt');
+  console.error('❌ Using: node decrypt.js input.enc output.txt');
   process.exit(1);
 }
 
