@@ -5,10 +5,14 @@ import * as fs from 'fs';
 
 @Injectable()
 export class StorageService {
-  private readonly storage: Storage;
-  private readonly bucketName: string;
+  private storage: Storage;
+  private bucketName: string;
 
   constructor(private readonly configService: ConfigService) {
+    this.initBucket();
+  }
+
+  private initBucket() {
     const projectId = this.configService.get<string>('GOOGLE_PROJECT_ID');
     const bucketName = this.configService.get<string>('GOOGLE_BUCKET_NAME');
     const keyFilename = './google-account-key.json';
@@ -28,19 +32,12 @@ export class StorageService {
     }
 
     this.bucketName = bucketName;
-    this.storage = new Storage({ projectId: projectId, keyFilename });
+    this.storage = new Storage({ projectId, keyFilename });
   }
 
   async listFiles(): Promise<string[]> {
     const [files] = await this.storage.bucket(this.bucketName).getFiles();
     return files.map((file) => file.name);
-  }
-
-  async downloadFile(fileName: string, destination: string): Promise<void> {
-    await this.storage
-      .bucket(this.bucketName)
-      .file(fileName)
-      .download({ destination });
   }
 
   getPublicUrl(fileName: string): string {
