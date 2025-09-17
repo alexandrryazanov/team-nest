@@ -6,6 +6,7 @@ import { UsersModule } from './modules/users/users.module';
 import { FeaturesModule } from './modules/features/features.module';
 import { HealthModule } from './modules/health/health.module';
 import { StorageModule } from './modules/storage/storage.module';
+import { VkModule } from './modules/auth/vk/vk.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { StorageModule } from './modules/storage/storage.module';
     HealthModule,
     EmailsModule,
     StorageModule,
+    VkModule,
   ],
 })
 export class AppModule {}
