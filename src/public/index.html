@@ -15,12 +15,15 @@
         <p id="status" class="mt-4 text-sm"></p>
     </div>
 
-    <!--https://id.vk.ru/authorize?code_challenge=2E-QiQf5YNcnyWjfGL-1VcsrM7vBTp7AlFIOXWI1sQg&code_challenge_method=s256&client_id=54139650&response_type=code&scope=&redirect_uri=https%3A%2F%2Fpablo-cliffy-prognosticatively.ngrok-free.app%2Fprofile-->
+    <!--https://id.vk.ru/authorize?code_challenge=2E-QiQf5YNcnyWjfGL-1VcsrM7vBTp7AlFIOXWI1sQg&code_challenge_method=s256&client_id=
+    54139650
+    &response_type=code&scope=&redirect_uri=
+    https%3A%2F%2Fpablo-cliffy-prognosticatively.ngrok-free.app%2Fprofile-->
     <script>
         const CLIENT_ID = '54139650'; // Replace with your VK app ID
-        const DYNAMIC_REDIRECT_URI = 'moanful-pentavalent-le.ngrok-free.app'; // Adjust if needed
-        const REDIRECT_URI_CALLBACK = `${DYNAMIC_REDIRECT_URI}/callback`; // Replace with your backend callback URL
-        const ENC_REDIRECT_URI = encodeURIComponent(REDIRECT_URI_CALLBACK);
+        const DYNAMIC_REDIRECT_URI = 'https://moanful-pentavalent-le.ngrok-free.app'; // Adjust if needed
+        const DYNAMIC_CALLBACK_URI = `${DYNAMIC_REDIRECT_URI}/auth/vk/callback`
+        const ENC_REDIRECT_URI = encodeURIComponent(DYNAMIC_REDIRECT_URI);
 
         const authButton = document.getElementById('authButton');
         const status = document.getElementById('status');
@@ -28,7 +31,6 @@
         authButton.addEventListener('click', () => {
             const authUrl = `https://id.vk.ru/authorize?code_challenge=2E-QiQf5YNcnyWjfGL-1VcsrM7vBTp7AlFIOXWI1sQg&code_challenge_method=s256&client_id=${CLIENT_ID}&response_type=code&scope=&redirect_uri=${ENC_REDIRECT_URI}`;
             window.location.href = authUrl;
-            console.log("REDIRECT_URI_CALLBACK = ", `${REDIRECT_URI_CALLBACK}`)
             console.log("ENC_REDIRECT_URI = ", `${ENC_REDIRECT_URI}`)
             console.log("authUrl = ", authUrl)
         });
@@ -37,7 +39,8 @@
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
         if (code) {
-            status.textContent = `Authorization code received: ${code}. Send to backend.`;
+            window.location.href = `${DYNAMIC_CALLBACK_URI}?code=${code}`;
+            // status.textContent = `Authorization code received: ${code}. Send to backend.`;
             // Here, you would typically send the code to your backend via fetch or form submit
             // Example: fetch('/exchange-token', { method: 'POST', body: JSON.stringify({code}) });
         }

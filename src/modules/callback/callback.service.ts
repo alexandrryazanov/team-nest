@@ -1,53 +1,61 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import axios from 'axios';
 
 @Injectable()
 export class CallbackService {
+  private readonly tokenUrl = 'https://oauth.vk.com/access_token';
+
   constructor() {}
 
-  async getAll(params) {
+  async authCallback(code: string): Promise<{
+    accessToken: string;
+    userId: number;
+    email?: string;
+    refreshToken?: string;
+  }> {
     console.log('callback get all is started');
 
-    // return { message: 'callback get all' };
+    const clientId = process.env.VK_CLIENT_ID;
+    const clientSecret = process.env.VK_CLIENT_SECRET;
+    const redirectUri = 'https://moanful-pentavalent-le.ngrok-free.app/auth/vk/callback2';
 
-    const { code } = params;
-
-    // Check if code exists
-    if (!code) {
-      throw new Error("Authorization code missing");
-    }
+    // Prepare query parameters for the POST request
+    // @ts-ignore
+    const params = new URLSearchParams({
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri: redirectUri,
+      code,
+    });
 
     try {
-      // Parameters needed for exchanging code for access token
-      const params = {
-        client_id: process.env.VK_APP_ID || 'YOUR_CLIENT_ID',
-        client_secret: process.env.VK_APP_SECRET || 'YOUR_CLIENT_SECRET',
-        redirect_uri: process.env.REDIRECT_URI || 'https://yourdomain.com/callback/vk',
-        grant_type: 'authorization_code',
-        code: code,
-      };
+      // Send POST request to VK's token endpoint
+      const response = await axios.post(this.tokenUrl, params, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
 
-      // Send post request to VK API to obtain access token
-      const response = await axios.post(
-        'https://oauth.vk.com/access_token',
-        null,
-        { params },
-      );
+      const { access_token, user_id, email, refresh_token } = response.data;
 
-      if (response.data.error) {
-        throw new Error(response.data.error_description);
+      if (!access_token) {
+        throw new UnauthorizedException(
+          'Failed to obtain access token from VK',
+        );
       }
 
-      // Return success message with the retrieved access token
       return {
-        message: "VK Authorization Successful",
-        access_token: response.data.access_token,
+        accessToken: access_token,
+        userId: user_id,
+        email,
+        refreshToken: refresh_token, // Only returned if 'offline' scope was requested
       };
-    } catch (err) {
-      return {
-        error: err.message || "An unknown error occurred.",
-      };
+    } catch (error) {
+      console.error(
+        'VK Token Exchange Error:',
+        error.response?.data || error.message,
+      );
+      throw new UnauthorizedException('Invalid VK code or configuration');
     }
-    //   return { message: 'Hello World' };
   }
 }
