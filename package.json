@@ -8,7 +8,7 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "npm run decrypt-google-key && nest start",
+    "start": "nest start",
     "start:dev": "npm run decrypt-google-key && nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
@@ -34,6 +34,7 @@
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/serve-static": "^5.0.3",
     "@nestjs/terminus": "^11.0.0",
     "@prisma/client": "^6.13.0",
     "@types/multer": "^2.0.0",
@@ -42,6 +43,7 @@
     "bullmq": "^5.58.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "localtunnel": "^2.0.2",
     "multer": "^2.0.2",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VK OAuth 2.0 Authorization</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4">VK Authorization</h1>
+        <button id="authButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Authorize with VK
+        </button>
+        <p id="status" class="mt-4 text-sm"></p>
+    </div>
+
+    <!--https://id.vk.ru/authorize?code_challenge=2E-QiQf5YNcnyWjfGL-1VcsrM7vBTp7AlFIOXWI1sQg&code_challenge_method=s256&client_id=54139650&response_type=code&scope=&redirect_uri=https%3A%2F%2Fpablo-cliffy-prognosticatively.ngrok-free.app%2Fprofile-->
+    <script>
+        const CLIENT_ID = '54139650'; // Replace with your VK app ID
+        const DYNAMIC_REDIRECT_URI = 'moanful-pentavalent-le.ngrok-free.app'; // Adjust if needed
+        const REDIRECT_URI_CALLBACK = `${DYNAMIC_REDIRECT_URI}/callback`; // Replace with your backend callback URL
+        const ENC_REDIRECT_URI = encodeURIComponent(REDIRECT_URI_CALLBACK);
+
+        const authButton = document.getElementById('authButton');
+        const status = document.getElementById('status');
+
+        authButton.addEventListener('click', () => {
+            const authUrl = `https://id.vk.ru/authorize?code_challenge=2E-QiQf5YNcnyWjfGL-1VcsrM7vBTp7AlFIOXWI1sQg&code_challenge_method=s256&client_id=${CLIENT_ID}&response_type=code&scope=&redirect_uri=${ENC_REDIRECT_URI}`;
+            window.location.href = authUrl;
+            console.log("REDIRECT_URI_CALLBACK = ", `${REDIRECT_URI_CALLBACK}`)
+            console.log("ENC_REDIRECT_URI = ", `${ENC_REDIRECT_URI}`)
+            console.log("authUrl = ", authUrl)
+        });
+
+        // Optional: Check for code in URL after redirect (if frontend handles it, but typically backend does)
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        if (code) {
+            status.textContent = `Authorization code received: ${code}. Send to backend.`;
+            // Here, you would typically send the code to your backend via fetch or form submit
+            // Example: fetch('/exchange-token', { method: 'POST', body: JSON.stringify({code}) });
+        }
+    </script>
+</body>
+</html>
