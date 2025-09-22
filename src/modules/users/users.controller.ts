@@ -22,6 +22,12 @@ import { Request, Response } from 'express';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Get('/me')
+  @UseGuards(AuthGuard())
+  async getMe(@UserId() userId: number) {
+    return await this.usersService.getOne(userId);
+  }
+
   @Get('/')
   @UseGuards(AuthGuard({ adminOnly: true }))
   async getAll(@Query() dto: GetAllUserDto) {

@@ -6,8 +6,13 @@ import { VkService } from './vk.service';
 export class VkController {
   constructor(private readonly vkService: VkService) {}
 
-  @Post()
-  auth(@Body() dto: AuthVkDto) {
-    return this.vkService.auth(dto);
+  @Post('/register')
+  register(@Body() dto: AuthVkDto) {
+    return this.vkService.register(dto);
+  }
+
+  @Post('/login')
+  login(@Body() dto: AuthVkDto) {
+    return this.vkService.login(dto);
   }
 }

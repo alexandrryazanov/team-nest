@@ -136,7 +136,7 @@ export class UsersService {
     }
   }
 
-  private async generateTokensPair(payload: object) {
+  async generateTokensPair(payload: object) {
     const secret = this.configService.get<string>('JWT_KEY');
     const accessExpiresIn = this.configService.get<string>(
       'JWT_ACCESS_EXPIRES_IN',
