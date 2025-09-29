@@ -10,7 +10,8 @@ import { JwtService } from '@nestjs/jwt';
 import { Queue } from 'bullmq';
 import { JwtPayload } from '../../types/jwt';
 import { CryptService } from '../crypt/crypt.service';
-import { EmailsType } from '../emails/emails.constants';
+import { EMAIL_TEMPLATE, EmailsType } from '../emails/emails.constants';
+import { EmailsService } from '../emails/emails.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -24,6 +25,7 @@ export class UsersService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     @InjectQueue('emails') private emailsQueue: Queue,
+    private readonly emailsService: EmailsService,
   ) {}
 
   async getAll({ offset, limit }: GetAllUserDto) {
@@ -55,13 +57,18 @@ export class UsersService {
       },
     });
 
-    await this.emailsQueue.add(
-      EmailsType.SEND_WELCOME_EMAIL,
-      {
-        email: user.email,
-      },
-      { delay: 3000 },
-    );
+    try {
+      await this.emailsService.sendEmail({
+        templateId: EMAIL_TEMPLATE.REGISTER,
+        email: dto.email,
+        variables: { test: dto.email },
+      });
+    } catch (e) {
+      console.log('Something went wrong when sending email:', {
+        e,
+        email: dto.email,
+      });
+    }
 
     return user;
   }
