@@ -1,22 +1,15 @@
-import { UserId } from '../../decorators/user-id.decorator';
-import { AuthGuard } from '../../guards/auth.guard';
-import { LoginUserDto } from './dto/login-user.dto';
-import { RegisterUserDto } from './dto/register-user.dto';
 import {
-  Body,
   Controller,
   Delete,
   Get,
   Param,
-  Post,
   Query,
-  Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { UserId } from '../../decorators/user-id.decorator';
+import { AuthGuard } from '../../guards/auth.guard';
 import { GetAllUserDto } from './dto/getall-user.dto';
-import { Request, Response } from 'express';
+import { UsersService } from './users.service';
 
 @Controller('users')
 export class UsersController {
@@ -43,38 +36,5 @@ export class UsersController {
   @UseGuards(AuthGuard())
   async delete(@Param('id') id: number, @UserId() initiatorId: number) {
     return await this.usersService.delete(id, initiatorId);
-  }
-
-  @Post('/register')
-  register(@Body() dto: RegisterUserDto) {
-    return this.usersService.register(dto);
-  }
-
-  @Post('/login')
-  async login(
-    @Body() dto: LoginUserDto,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    const { accessToken, refreshToken } = await this.usersService.login(dto);
-    response.cookie('refreshToken', refreshToken, { httpOnly: true });
-    return { accessToken };
-  }
-
-  @Post('/refresh')
-  async refresh(
-    @Req() request: Request,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    const token: string = request.cookies['refreshToken'];
-    const { accessToken, refreshToken } =
-      await this.usersService.refresh(token);
-    response.cookie('refreshToken', refreshToken, { httpOnly: true });
-    return { accessToken };
-  }
-
-  @Post('/logout')
-  logout(@Res({ passthrough: true }) response: Response) {
-    response.clearCookie('refreshToken', { httpOnly: true });
-    return 'OK';
   }
 }

@@ -1,10 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthVkDto } from './dto/auth-vk.dto';
-import { VkService } from './vk.service';
+import { VkAuthService } from './vk-auth.service';
 
-@Controller('auth/vk')
-export class VkController {
-  constructor(private readonly vkService: VkService) {}
+@Controller('/auth/vk')
+export class VkAuthController {
+  constructor(private readonly vkService: VkAuthService) {}
 
   @Post('/register')
   register(@Body() dto: AuthVkDto) {

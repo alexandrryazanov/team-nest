@@ -2,16 +2,16 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { PrismaService } from '../../prisma/prisma.service';
-import { UsersService } from '../../users/users.service';
+import { GeneralAuthService } from '../general/general-auth.service';
 import { AuthVkDto } from './dto/auth-vk.dto';
-import { VkAuthErrorResponse, VkAuthSuccessResponse } from './vk.types';
+import { VkAuthErrorResponse, VkAuthSuccessResponse } from './vk-auth.types';
 
 @Injectable()
-export class VkService {
+export class VkAuthService {
   constructor(
     private readonly httpService: HttpService,
     private readonly prisma: PrismaService,
-    private readonly usersService: UsersService,
+    private readonly generalAuthService: GeneralAuthService,
   ) {}
 
   private async auth({ code, deviceId }: AuthVkDto, isRegister: boolean) {
@@ -72,7 +72,7 @@ export class VkService {
       },
     });
 
-    return this.usersService.generateTokensPair({ sub: user.id });
+    return this.generalAuthService.generateTokensPair({ sub: user.id });
   }
 
   async login(dto: AuthVkDto) {
@@ -89,6 +89,6 @@ export class VkService {
       throw new UnauthorizedException('User not found');
     }
 
-    return this.usersService.generateTokensPair({ sub: vkUser.user.id });
+    return this.generalAuthService.generateTokensPair({ sub: vkUser.user.id });
   }
 }
