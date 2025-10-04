@@ -1,9 +1,5 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsNumberString,
-  MinLength,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsNumberString, Length } from 'class-validator';
+import { OTP_CODE_LENGTH } from '../otp-auth.constants';
 
 export class OtpAuthDto {
   @IsNotEmpty()
@@ -12,6 +8,6 @@ export class OtpAuthDto {
 
   @IsNotEmpty()
   @IsNumberString()
-  @MinLength(3)
+  @Length(OTP_CODE_LENGTH)
   code: string;
 }

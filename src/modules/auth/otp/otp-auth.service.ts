@@ -8,7 +8,11 @@ import { OtpAuthSendCodeDto } from './dto/send-code.dto';
 import { PrismaService } from 'src/modules/prisma/prisma.service';
 import { CryptService } from 'src/modules/crypt/crypt.service';
 import { RedisService } from 'src/modules/redis/redis.service';
-import { OTP_CODE_LIFETIME, OTP_CODE_PREFIX } from './otp-auth.constants';
+import {
+  OTP_CODE_LENGTH,
+  OTP_CODE_LIFETIME,
+  OTP_CODE_PREFIX,
+} from './otp-auth.constants';
 import { EmailsService } from 'src/modules/emails/emails.service';
 import { EMAIL_TEMPLATE } from 'src/modules/emails/emails.constants';
 import { AUTH_NO_PASSWORD } from '../auth.constants';
@@ -44,7 +48,8 @@ export class OtpAuthService {
   }
 
   async sendCode({ email }: OtpAuthSendCodeDto) {
-    const otpCode = await this.cryptService.generateHashedNumCode();
+    const otpCode =
+      await this.cryptService.generateHashedNumCode(OTP_CODE_LENGTH);
 
     try {
       await this.redisSerivce.set(`${OTP_CODE_PREFIX}:${email}`, otpCode, {
