@@ -2,9 +2,9 @@ import { Body, Post, Controller } from '@nestjs/common';
 import { OtpAuthService } from './otp-auth.service';
 import { OtpAuthSendCodeDto } from './dto/send-code.dto';
 import { OtpAuthDto } from './dto/otp-auth.dto';
-import { Throttle } from '@nestjs/throttler';
+import { Throttle, seconds } from '@nestjs/throttler';
 
-@Throttle({ default: { limit: 10, ttl: 60000 } })
+@Throttle({ default: { limit: 10, ttl: seconds(60) } })
 @Controller('/auth/otp')
 export class OtpAuthController {
   constructor(private readonly otpAuthService: OtpAuthService) {}
