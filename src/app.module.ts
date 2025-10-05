@@ -1,5 +1,6 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { EmailsModule } from './modules/emails/emails.module';
@@ -8,7 +9,7 @@ import { HealthModule } from './modules/health/health.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { UsersModule } from './modules/users/users.module';
 import { RedisModule } from './modules/redis/redis.module';
-import { ThrottlerModule, seconds } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule, seconds } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -27,6 +28,12 @@ import { ThrottlerModule, seconds } from '@nestjs/throttler';
     EmailsModule,
     StorageModule,
     RedisModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}
