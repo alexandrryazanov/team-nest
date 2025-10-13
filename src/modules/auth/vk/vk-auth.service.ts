@@ -5,6 +5,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { GeneralAuthService } from '../general/general-auth.service';
 import { AuthVkDto } from './dto/auth-vk.dto';
 import { VkAuthErrorResponse, VkAuthSuccessResponse } from './vk-auth.types';
+import { AUTH_NO_PASSWORD } from '../auth.constants';
 
 @Injectable()
 export class VkAuthService {
@@ -61,7 +62,7 @@ export class VkAuthService {
     const user = await this.prisma.user.create({
       data: {
         email: randomStringGenerator() + '@vk.com',
-        hashedPassword: 'no-password',
+        hashedPassword: AUTH_NO_PASSWORD,
         vkUser: {
           create: {
             id: vkUser.id,

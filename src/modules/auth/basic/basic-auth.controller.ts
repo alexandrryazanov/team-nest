@@ -3,16 +3,19 @@ import { Response } from 'express';
 import { BasicAuthService } from './basic-auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { Throttle, hours, seconds } from '@nestjs/throttler';
 
 @Controller('/auth/basic')
 export class BasicAuthController {
   constructor(private readonly basicAuthService: BasicAuthService) {}
 
+  @Throttle({ default: { limit: 5, ttl: hours(1) } })
   @Post('/register')
   register(@Body() dto: RegisterDto) {
     return this.basicAuthService.register(dto);
   }
 
+  @Throttle({ default: { limit: 5, ttl: seconds(60) } })
   @Post('/login')
   async login(
     @Body() dto: LoginDto,
