@@ -44,7 +44,7 @@ export class OtpAuthService {
     dto: OtpAuthDto,
     options?: { isRegistrationAllowed?: boolean; lockType?: LockType },
   ) {
-    const { isRegistrationAllowed = false, lockType = OTP_LOCK_TYPE } =
+    const { isRegistrationAllowed = true, lockType = OTP_LOCK_TYPE } =
       options ?? {};
 
     await this.ensureNotLocked(dto.email, lockType);
@@ -71,11 +71,11 @@ export class OtpAuthService {
   ) {
     await this.ensureNotLocked(email, lockType);
 
-    const otpCode =
+    const { hashedCode, code } =
       await this.cryptService.generateHashedNumCode(OTP_CODE_LENGTH);
 
     try {
-      await this.redisService.set(this.getOtpRedisKey(email), otpCode, {
+      await this.redisService.set(this.getOtpRedisKey(email), hashedCode, {
         expiration: { type: 'EX', value: OTP_CODE_TTL },
       });
     } catch {
@@ -86,7 +86,7 @@ export class OtpAuthService {
       await this.emailsService.sendEmail({
         templateId: EMAIL_TEMPLATE.REGISTER,
         email,
-        variables: { test: email },
+        variables: { test: code },
       });
     } catch (e) {
       console.log('OTP Code. Something went wrong when sending email:', {
