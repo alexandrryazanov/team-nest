@@ -15,13 +15,15 @@ datasource db {
 }
 
 model User {
-  id             Int      @id @default(autoincrement())
-  email          String   @unique
+  id             Int           @id @default(autoincrement())
+  email          String        @unique
   hashedPassword String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  isAdmin        Boolean  @default(false)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  isAdmin        Boolean       @default(false)
   vkUser         VkUser?
+  payments       Payment[]
+  subscription   Subscription?
 }
 
 model VkUser {
@@ -39,4 +41,61 @@ model Feature {
   payload   Json?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Payment {
+  id             Int             @id @default(autoincrement())
+  amount         Int
+  provider       PaymentProvider
+  transactionId  String
+  status         PaymentStatus   @default(INIT)
+  subscriptionId Int
+  subscription   Subscription    @relation(fields: [subscriptionId], references: [id])
+  userId         Int
+  user           User            @relation(fields: [userId], references: [id])
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model Subscription {
+  id           Int                @id @default(autoincrement())
+  type         SuscriptionType
+  status       SubscriptionStatus @default(ACTIVE)
+  period       SubscriptionPeriod
+  expiresAt    DateTime
+  nextChargeAt DateTime
+  payments     Payment[]
+  userId       Int                @unique
+  user         User               @relation(fields: [userId], references: [id])
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELED
+}
+
+enum SubscriptionPeriod {
+  MONTH
+  QUARTER
+  YEAR
+}
+
+enum SuscriptionType {
+  STANDARD
+  PRO
+}
+
+enum PaymentStatus {
+  INIT
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELED
+}
+
+enum PaymentProvider {
+  STRIPE
 }
