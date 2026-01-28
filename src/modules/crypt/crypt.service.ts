@@ -27,7 +27,12 @@ export class CryptService {
     return code;
   }
 
-  generateHashedNumCode(len = 6) {
-    return this.hash(this.generateNumCode(len));
+  async generateHashedNumCode(len = 6) {
+    const code = this.generateNumCode(len);
+
+    return {
+      hashedCode: await this.hash(code),
+      code,
+    };
   }
 }
