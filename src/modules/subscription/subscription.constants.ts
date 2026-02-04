@@ -6,18 +6,18 @@ import {
 
 export const SUBSCRIPTIONS: Subscriptions = {
   [SubscriptionType.STANDARD]: {
-    amounts: {
-      [SubscriptionPeriod.MONTH]: 10,
-      [SubscriptionPeriod.QUARTER]: 25,
-      [SubscriptionPeriod.YEAR]: 100,
+    amountsInCents: {
+      [SubscriptionPeriod.MONTH]: 1000,
+      [SubscriptionPeriod.QUARTER]: 2500,
+      [SubscriptionPeriod.YEAR]: 10000,
     },
     features: [FEATURE.MULTI_ACCESS, FEATURE.WHATSAPP_BOT],
   },
   [SubscriptionType.PRO]: {
-    amounts: {
-      [SubscriptionPeriod.MONTH]: 50,
-      [SubscriptionPeriod.QUARTER]: 140,
-      [SubscriptionPeriod.YEAR]: 500,
+    amountsInCents: {
+      [SubscriptionPeriod.MONTH]: 5000,
+      [SubscriptionPeriod.QUARTER]: 14000,
+      [SubscriptionPeriod.YEAR]: 50000,
     },
     features: [
       FEATURE.MULTI_ACCESS,

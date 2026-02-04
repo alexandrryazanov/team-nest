@@ -2,11 +2,29 @@ import { Injectable } from '@nestjs/common';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { SUBSCRIPTIONS } from './subscription.constants';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class SubscriptionService {
+  constructor(private readonly prisma: PrismaService) {}
+
   getAll() {
     return SUBSCRIPTIONS;
+  }
+
+  async getByUserId(userId: number) {
+    const subscription = await this.prisma.subscription.findUnique({
+      where: { userId },
+      select: {
+        type: true,
+        status: true,
+        period: true,
+        expiresAt: true,
+        nextChargeAt: true,
+      },
+    });
+
+    return subscription || null;
   }
 
   create(createSubscriptionDto: CreateSubscriptionDto) {

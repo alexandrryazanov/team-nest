@@ -10,6 +10,7 @@ import { StorageModule } from './modules/storage/storage.module';
 import { UsersModule } from './modules/users/users.module';
 import { RedisModule } from './modules/redis/redis.module';
 import { ThrottlerGuard, ThrottlerModule, seconds } from '@nestjs/throttler';
+import { SubscriptionModule } from './modules/subscription/subscription.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ThrottlerGuard, ThrottlerModule, seconds } from '@nestjs/throttler';
     EmailsModule,
     StorageModule,
     RedisModule,
+    SubscriptionModule,
   ],
   providers: [
     {
