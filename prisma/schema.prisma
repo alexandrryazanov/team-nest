@@ -59,7 +59,7 @@ model Payment {
 
 model Subscription {
   id           Int                @id @default(autoincrement())
-  type         SuscriptionType
+  type         SubscriptionType
   status       SubscriptionStatus @default(ACTIVE)
   period       SubscriptionPeriod
   expiresAt    DateTime
@@ -83,7 +83,7 @@ enum SubscriptionPeriod {
   YEAR
 }
 
-enum SuscriptionType {
+enum SubscriptionType {
   STANDARD
   PRO
 }
