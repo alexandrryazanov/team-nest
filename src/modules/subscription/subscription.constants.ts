@@ -4,6 +4,7 @@ import {
   SubscriptionType,
 } from '../../../generated/prisma';
 
+export const SUBSCRIPTION_ADDITIONAL_DAYS = 7;
 export const SUBSCRIPTIONS: Subscriptions = {
   [SubscriptionType.STANDARD]: {
     amountsInCents: {
